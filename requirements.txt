@@ -1,3 +1,0 @@
-
-# List your Python dependencies here
-termcolor
