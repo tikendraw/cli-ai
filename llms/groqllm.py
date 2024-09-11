@@ -5,21 +5,25 @@ from .utils import DotDict
 import os
 from core.basemessage import SystemMessage, UserMessage, AssistantMessage, LLMHistory
 from typing import Any
-
+from core.bashcode import BashCode
 
 class GroqLLM(BaseLLM):
-    model_name = "Groq"
+    api_key_var_name = 'GROQ_API_KEY'
     
-    def __init__(self, api_key: str, model_name: str, **kwargs):
+    def __init__(self, api_key: str=None, model_name: str = 'llama3-8b-8192', system_prompt: str = SYSTEM_PROMPT, **kwargs):
         super().__init__()
-        self.model_name = model_name
         self.client = Groq(api_key=api_key)
-        self.history = LLMHistory(load_history=True, system_prompt=SYSTEM_PROMPT)
-
-    def _response_parser(self, response:Any):
-        return response.choices[0].message.content
-    
-    def _generate_response(self,user_prompt:str, history:list[dict]=None, **kwargs):
+        self.history = LLMHistory(system_prompt=system_prompt)
+        self.model_name = model_name
+        
+    def _response_parser(self, response:Any) -> str:
+        try:
+            return response.choices[0].message.content
+        except AttributeError as e:
+            print(response)
+            raise e    
+        
+    def _generate_response(self,user_prompt:str, history:list[dict]=None, **kwargs) -> Any:
         response = self.client.chat.completions.create(
             messages=[*history,
                 {
@@ -31,7 +35,7 @@ class GroqLLM(BaseLLM):
             **kwargs
         )
         
-        return self._response_parser(response=response)
+        return response
     
         
 
