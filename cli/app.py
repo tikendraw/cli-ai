@@ -5,7 +5,6 @@ from core.basellm import BaseLLM
 from core.executor.base_executor import BaseExecutor
 from core.bashcode import BashCode, BashCodeRun, CodeReport
 from llms import TestLLM, GroqLLM, OllamaLLM, get_model_class, extract_model_class_and_model_name
-from core.executor.persistant_executor import PersistentShellExecuter
 from core.executor.sequential_shell_executor import SequentialShellExecutor
 from core.basepermission import Permission, UserChoice
 from termcolor import colored
@@ -29,7 +28,7 @@ models = [
         'ollama/qwen2:0.5b',
     ]
 
-def app(user_input:str=None, n_hist:int=2, model:str='groq/llama3-70b-8192'):
+def app(user_input:str=None, n_hist:int=2, model:str=models[3]):
     # Get user input
     user_input = input(colored("Enter your command: ", "cyan")) if not user_input else user_input
     # llm = OllamaLLM(model_name="qwen2:1.5b")  # Replace with actual model name    
