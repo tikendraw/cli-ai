@@ -1,7 +1,7 @@
 from typing import Any
 import ollama
 from core.basellm import BaseLLM
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from core.prompts import SYSTEM_PROMPT
 from .utils import DotDict
@@ -27,19 +27,21 @@ class OllamaOutput(BaseModel):
     eval_duration:int
     
 class OllamaLLM(BaseLLM):
+    api_key_var_name = 'OLLMA_API_KEY'
     
     def __init__(self, model_name: str, **kwargs):
         super().__init__()
         self.model_name = model_name
-        self.history = LLMHistory(load_history=True, system_prompt=SYSTEM_PROMPT)
         
-    def _response_parser(self, response:Any):
+    def _response_parser(self, response:Any) -> str:        
+        try:
+            response = OllamaOutput(**response)
+            return response.message.content
+        except ValidationError as e:
+            print(response)
+            raise e
         
-        response = OllamaOutput(**response)
-        return response.message.content
-
-        
-    def _generate_response(self, user_prompt:str,history:list[dict], **kwargs):
+    def _generate_response(self, user_prompt:str,history:list[dict], **kwargs) ->Any:
         response = ollama.chat(
             messages=[*history,
                 {
@@ -50,8 +52,6 @@ class OllamaLLM(BaseLLM):
             model=self.model_name,
             **kwargs
         )
-
-        response = self._response_parser(response=response)            
         return response
         
     
