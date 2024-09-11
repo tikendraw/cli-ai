@@ -1,9 +1,15 @@
 [tool.poetry]
 name = "nlc"
 version = "0.1.0"
-description = "ai for cli"
+description = "AI for CLI"
 authors = ["tikendraw <tikendraksahu1029@gmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "cli" },
+    { include = "core" },
+    { include = "llms" },
+    { include = "utils" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -12,10 +18,9 @@ groq = "^0.11.0"
 ollama = "^0.3.2"
 click = "^8.1.7"
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-nlc = "nlc.cli:main"
+ci = "cli.main:run"
