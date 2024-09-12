@@ -1,39 +1,53 @@
 from os import system
 from typing import List, Optional, Any
 import os
+from abc import ABC, abstractmethod
+from pydantic import ValidationError
 from termcolor import colored
 from .basemodel import BaseModel
 from .prompts import SYSTEM_PROMPT, ERROR_FIX_PROMPT
 from .basemessage import AssistantMessage, LLMHistory, UserMessage
 from .bashcode import BashCode, BashCodeRun
+from dataclasses import dataclass
 
 N_TRY:int = 3
 N_HIST = 5
-class BaseLLM(BaseModel):
-    api_key_var_name:int = ''
-    
-    
-    def ___init__(self, model_name:str=None, api_key:str=None, system_prompt:str=SYSTEM_PROMPT, **kwargs):
-        self.api_key = api_key or self.get_api_key_from_environment()
-        self.model_name = model_name
-        self.system_prompt = system_prompt
-        self.history = LLMHistory(system_prompt=system_prompt)
+
+@dataclass
+class LLMConfig:
+    model_name: str
+    api_key: Optional[str] = None
+    system_prompt: str = SYSTEM_PROMPT
+
+
+class BaseLLM(BaseModel, ABC):
+    def __init__(self, config: LLMConfig):
+        self.config = config
+        self.api_key = config.api_key or self.get_api_key_from_environment()
+        self.history = LLMHistory(system_prompt=config.system_prompt)
         
-    def generate_response(self,user_prompt:str, n_hist:int=N_HIST,n_try:int=N_TRY, include_system_prompt:bool=True,**kwargs) -> BashCode:
-        
+    def generate_response(self,user_prompt:str, n_hist:int=N_HIST,n_try:int=N_TRY, include_system_prompt:bool=True,**kwargs) -> BashCode:        
         parsable_response=False
+        
         while not parsable_response and n_try>0:
             response = self._gen(user_prompt=user_prompt, n_hist=n_hist, include_system_prompt=include_system_prompt)
             response = self._response_parser(response=response)
             print(colored(response, 'red', 'on_black'))
-            response = self.code_parser(response)
-            n_try -= 1
-            print('regenrating...')
-            if isinstance(response, BashCode):
-                parsable_response=True
+            
+            try:
+                response = self.code_parser(response)
+                parsable_response = True
+            except ValidationError as e:
+                print(f"Error parsing response: {e}")
+                n_try -= 1
+                print('Regenerating...')
+        
+        if not parsable_response:
+            raise ValueError("Failed to generate a parsable response")
         
         self.history.add_message(UserMessage(content=user_prompt))
         self.history.add_message(AssistantMessage(content=str(response)))
+        
         return response
     
     def _gen(self, user_prompt, n_hist, include_system_prompt,**kwargs):
@@ -50,16 +64,19 @@ class BaseLLM(BaseModel):
             )  
         return response
           
+    @abstractmethod
     def _generate_response(self,user_prompt:str, history:list[dict], **kwargs):
-        raise NotImplementedError("Subclass must implement abstract method")
-    
+        pass
+
+    @abstractmethod
     def get_api_key_from_environment(self):
-        self.api_key = os.getenv(self.api_key_var_name)
+        pass
     
+    @abstractmethod
     def _response_parser(self,response:Any) -> BashCode:
         ''' return message text out of generated response'''
-        raise NotImplementedError("Subclass should implement this to get the text message out fo generated response")
-
+        pass
+    
     def code_parser(self, text:str) -> BashCode :
         return BashCode.from_text(text=text)
 
