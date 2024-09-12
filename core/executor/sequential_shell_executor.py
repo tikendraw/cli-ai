@@ -11,7 +11,8 @@ class SequentialShellExecutor(BaseExecutor):
     def run(self, commands: List[str], verbose: bool = True) -> Tuple[str, str, str, int]:
         env = {}  # To maintain environment changes between commands
 
-        command = ';'.join(commands)
+        commands = self.clean_commands(commands=commands)
+        command = '&&'.join(commands) # && to join so if a command fails other commands don't get executed
         # for command in commands:
         try:
             process = subprocess.Popen(
