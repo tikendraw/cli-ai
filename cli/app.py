@@ -1,7 +1,7 @@
 # cli/app.py
 # Objective: Implements the CLI application using a library like Click or argparse
 import os
-from core.basellm import BaseLLM
+from core.basellm import BaseLLM, LLMConfig
 from core.executor.base_executor import BaseExecutor
 from core.bashcode import BashCode, BashCodeRun, CodeReport
 from llms import TestLLM, GroqLLM, OllamaLLM, get_model_class, extract_model_class_and_model_name
@@ -14,6 +14,7 @@ from core.prompts import SYSTEM_PROMPT
 executor = SequentialShellExecutor()
 
 models = [
+        #groq
         'groq/llama3-groq-70b-8192-tool-use-preview',
         'groq/llama-3.1-8b-instant',
         'groq/gemma2-9b-it',
@@ -23,19 +24,32 @@ models = [
         'groq/llama-guard-3-8b',
         'groq/llama3-groq-8b-8192-tool-use-preview',
         'groq/mixtral-8x7b-32768',
+        #ollama
         'ollama/gemma2:2b',
         'ollama/qwen2:1.5b',
         'ollama/qwen2:0.5b',
+        #cerebras
+        'cerebras/llama3.1-8b',
+        'cerebras/llama3.1-70b',
+        #google
+        'google/gemini-1.5-flash',
+        'google/gemini-1.5-pro',
+        'google/gemini-1.0-pro',
+        'google/gemini-1.5-pro-exp-0827',
+        'google/gemini-1.5-flash-exp-0827',
+        'google/gemini-1.5-flash-8b-exp-0827',
     ]
 
-def app(user_input:str=None, n_hist:int=2, model:str=models[3]):
+def app(user_input:str=None, n_hist:int=2, model:str=models[4]):
     # Get user input
     user_input = input(colored("Enter your command: ", "cyan")) if not user_input else user_input
     # llm = OllamaLLM(model_name="qwen2:1.5b")  # Replace with actual model name    
     # llm = GroqLLM(api_key=os.getenv("GROQ_API_KEY"), model_name="llama3-70b-8192", system_prompt=SYSTEM_PROMPT)
     model_class, model_name = extract_model_class_and_model_name(model)
     llm = get_model_class(model_class)
-    llm = llm(model_name=model_name)
+    print(api_key := os.environ[llm.api_key_var_name])
+    llm_config = LLMConfig(model_name=model_name, api_key=api_key)
+    llm = llm(config=llm_config)
     commands = llm.generate_response(user_prompt=user_input, n_hist=n_hist)
     output = command_execute(commands=commands.stepwise_bash_code, executor=executor, ask_user=True)
     # print('got output')
