@@ -1,13 +1,17 @@
 from typing import Tuple
 from .testllm import TestLLM
 from .ollamallm import OllamaLLM 
+from .cerebrasllm import CerebrasLLM
 from .groqllm import GroqLLM
+from .googlellm import GoogleLLM
 from .utils import DotDict
 from core.basellm import BaseLLM
 
 models = {
     'groq':GroqLLM,
     'ollama':OllamaLLM,
+    'cerebras':CerebrasLLM,
+    'google':GoogleLLM
 }
 
 def get_model_class(model_class:str) -> BaseLLM:
@@ -28,4 +32,4 @@ def extract_model_class_and_model_name(model_str:str) -> Tuple[str, str]:
     except IndexError as e:
         raise ValueError("Not a valid model name, do like this: groq/llama3-8b-8192 or ollama/qwen2:0.5b")
 
-__all__ = ["TestLLM", "GroqLLM", "OllamaLLM", 'get_model_class', 'extract_model_class_and_model_name', 'DotDict']
+__all__ = ["TestLLM", "GroqLLM", "OllamaLLM","CerebrasLLM", "GoogleLLM",'get_model_class', 'extract_model_class_and_model_name', 'DotDict']
