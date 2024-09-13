@@ -19,6 +19,7 @@ ollama = "^0.3.2"
 click = "^8.1.7"
 cerebras-cloud-sdk = "^1.2.0"
 google-generativeai = "^0.8.0"
+litellm = "^1.44.25"
 
 [build-system]
 requires = ["poetry-core"]
