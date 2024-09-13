@@ -18,6 +18,7 @@ class LLMConfig:
     model_name: str
     api_key: Optional[str] = None
     system_prompt: str = SYSTEM_PROMPT
+    base_url:str | None = None
 
 
 class BaseLLM(BaseModel, ABC):
@@ -30,7 +31,7 @@ class BaseLLM(BaseModel, ABC):
         parsable_response=False
         
         while not parsable_response and n_try>0:
-            response = self._gen(user_prompt=user_prompt, n_hist=n_hist, include_system_prompt=include_system_prompt)
+            response = self._gen(user_prompt=user_prompt, n_hist=n_hist, include_system_prompt=include_system_prompt, **kwargs)
             response = self._response_parser(response=response)
             print(colored(response, 'red', 'on_black'))
             
