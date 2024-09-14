@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nlc"
-version = "0.1.0"
+version = "0.1.1"
 description = "AI for CLI"
 authors = ["tikendraw <tikendraksahu1029@gmail.com>"]
 readme = "README.md"
@@ -12,14 +12,14 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.13"
 termcolor = "^2.4.0"
 groq = "^0.11.0"
 ollama = "^0.3.2"
 click = "^8.1.7"
 cerebras-cloud-sdk = "^1.2.0"
 google-generativeai = "^0.8.0"
-litellm = "^1.44.25"
+litellm = "^1.45.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -27,3 +27,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 ci = "cli.main:run"
+cli = "cli.main:cli"
