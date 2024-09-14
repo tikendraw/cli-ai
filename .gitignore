@@ -166,3 +166,4 @@ cython_debug/
 #.idea/
 testingc0de.py
 bash-expert-prompt.md
+.aider*
