@@ -1,11 +1,8 @@
-
-# Natural Language CLI
-
-# cli-ai
-
+# CLI-Agent
+Talk to cli-agent and it will help you to write bash code to solve your problem.
 ### Installation
 ```bash
-pip install cli-ai
+pip install cli-agent
 ```
 
 ### Configuration
@@ -41,7 +38,7 @@ cli run 'kill the chrome' --model cerebras/llama3.1-70b
 ```
 or 
 ```bash
-ci 'convert this.mp4  to 720p and remove the audio' --model openai/gpt-3.5-turbo
+ci 'convert this.mp4  to 720p and remove the audio' 
 ```
 
 2. If error happens, you can fix it with the following command.
@@ -51,7 +48,7 @@ Error-report takes account of the last command it executed, so it will fix the e
 ci ' also flip the video' --model openai/gpt-3.5-turbo --error-report
 ```
 
-# command line interface
+### command line interface
 ```bash
 $ cli --help
 Usage: cli [OPTIONS] COMMAND [ARGS]...
@@ -79,6 +76,6 @@ Options:
 
 ```
 
-# Recommended models
+### Recommended models
 - cerebras (https://github.com/cerebras) #fastest model inference in the world on llama3.1-70b
 - groq (https://github.com/simonw/groq) # 2nd Fastest model inference
