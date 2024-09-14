@@ -1,7 +1,7 @@
 import click
 import json
 import os
-from config import config_file
+from cli.config import config_file
 from .app import app
 
 

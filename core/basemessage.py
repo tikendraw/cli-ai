@@ -15,7 +15,7 @@ class AssistantMessage(Message):
 class SystemMessage(Message):
     role: str = "system"
     
-from config import history_file
+from cli.config import history_file
 from .prompts import SYSTEM_PROMPT
 
 class LLMHistory:

@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, computed_field, ValidationError
 import json, re
 from pathlib import Path
 from typing import List, Optional
-from config import config_folder
+from cli.config import config_folder
 
 
 class MyBaseModel(BaseModel):
