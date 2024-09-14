@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "cli-ai"
+name = "cli-agent"
 version = "0.1.2"
 description = "AI for CLI"
 authors = ["tikendraw <tikendraksahu1029@gmail.com>"]
