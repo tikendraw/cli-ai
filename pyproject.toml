@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "nlc"
+name = "cliai"
 version = "0.1.1"
 description = "AI for CLI"
 authors = ["tikendraw <tikendraksahu1029@gmail.com>"]
