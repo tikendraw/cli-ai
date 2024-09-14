@@ -1,3 +1,4 @@
+from multiprocessing import Value
 from os import system
 from typing import List, Optional, Any
 import os
@@ -33,12 +34,16 @@ class BaseLLM(BaseModel, ABC):
         while not parsable_response and n_try>0:
             response = self._gen(user_prompt=user_prompt, n_hist=n_hist, include_system_prompt=include_system_prompt, **kwargs)
             response = self._response_parser(response=response)
-            print(colored(response, 'red', 'on_black'))
+            # print(colored(response, 'red', 'on_black'))
             
             try:
                 response = self.code_parser(response)
-                parsable_response = True
-            except ValidationError as e:
+                if isinstance(response, BashCode):
+                    parsable_response = True
+                else:
+                    raise ValueError("Response is not parsable")
+                
+            except (ValidationError, ValueError) as e:
                 print(f"Error parsing response: {e}")
                 n_try -= 1
                 print('Regenerating...')
@@ -81,14 +86,6 @@ class BaseLLM(BaseModel, ABC):
     def code_parser(self, text:str) -> BashCode :
         return BashCode.from_text(text=text)
 
-    def fix_error(self, coderun:BashCodeRun,**kwargs):
-        user_prompt = ERROR_FIX_PROMPT.format(
-            instructions=coderun.instructions,
-            commands='\n\n'.join(coderun.stepwise_bash_code),
-            error_logs=' '.join([i.model_dump() for i in coderun.logs]),
-            modifications=coderun.modifications,
-            )
-        return self.generate_response(user_prompt=user_prompt, n_hist=2)
 
     def run(self, *args, **kwargs):
         self.generate_response(**kwargs)
