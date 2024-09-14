@@ -5,7 +5,7 @@
 
 ### Installation
 ```bash
-pip install cliai
+pip install cli-ai
 ```
 
 ### Configuration
